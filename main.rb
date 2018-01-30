@@ -2,7 +2,6 @@ require_relative 'calendar.rb'
 require_relative 'exceptions'
 
 loop do
-	break
   puts "Enter something:"
   puts ""
 	expression = gets
