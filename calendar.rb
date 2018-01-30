@@ -1,17 +1,24 @@
-require_relative 'event.rb'
+require_relative 'event'
 require_relative 'exceptions'
 require 'active_support'
 require 'active_support/core_ext'
 require 'date'
 require 'chronic'
+require 'json'
 
 class Calendar
 	attr_accessor :name, :event_list
 
-	def initialize(name_to_assign)
+	def initialize(name_to_assign, event_list = [])
 		@name = name_to_assign
 		raise CalendarNameRequiredError if @name.nil? || @name.blank?
 		@event_list = []
+		event_list.each { |event| 
+			location_hash = event['location'].inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo} if event['location']
+			@event_list.push(Event.new(event['name'], start_time: event['start_time'],
+				                         end_time: event['end_time'], all_day: event['all_day'],
+				                         location: location_hash))
+		}
 	end
 
 	def add_event(name, all_day: false, **args)
@@ -81,12 +88,28 @@ class Calendar
 		}
 	end
 
+	def to_s
+  	"Calendar: #{@name}"
+  end
+
+  def save
+  	File.open("#{@name}.json","w") do |f|
+		  f.write(to_json)
+		end
+  end
+
+  def self.load(name_of_calendar)
+  	file = File.read("#{name_of_calendar}.json")
+  	calendar = JSON.parse(file)
+  	Calendar.new(name_of_calendar, calendar['event_list'])
+  end
+
 	protected
 
 	def parse_date_time(date_time)
-    date_time = Chronic.parse(date_time) if date_time.is_a? String
-    date_time
-  end
+      date_time = Chronic.parse(date_time) if date_time.is_a? String
+      date_time
+    end
 
 	def check_validations(start_time, end_time)
 		evts_in_range = events_in_range(start_time, end_time)

@@ -1,13 +1,16 @@
-require_relative 'calendar.rb'
+require_relative 'calendar'
 require_relative 'exceptions'
+require 'readline'
+
+bnd = binding()
 
 loop do
-  puts "Enter something:"
+  puts 'Enter a command:'
   puts ""
-	expression = gets
+	expression = Readline.readline("> ", true)
 	break if expression == 'quit' || expression == 'exit'
 	begin
-		result = eval(expression)
+		result = bnd.eval(expression)
 	rescue SyntaxError
 		puts 'Wrong syntax'
 	rescue StandardError => e

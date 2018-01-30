@@ -1,4 +1,4 @@
-require_relative 'location.rb'
+require_relative 'location'
 require_relative 'exceptions'
 require 'active_support'
 require 'active_support/core_ext'
