@@ -24,8 +24,8 @@ end
 
 class ExistingEventInRangeError < StandardError
   def initialize(msg="Invalid: there are events colling in that range", events: {})
-  	values = events.map(&:name)
-  	msg += msg + ": #{values}"
+    values = events.map(&:name)
+    msg += msg + ": #{values}"
     super(msg)
   end
 end
